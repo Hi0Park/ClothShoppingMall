@@ -1,4 +1,11 @@
-
+server:
+  address: 0.0.0.0
+  tomcat:
+    accept-count: 2000 # 수락 대기열을 넉넉히 늘림
+    threads:
+      max: 200 # 동시에 처리할 스레드 수 (필요시 조절)
+    keep-alive-timeout: 60000 # 60초 동안 연결 유지
+    max-keep-alive-requests: 1000 # 한 연결당 최대 1000개 요청 허용
 spring:
   h2:
     console:
@@ -34,3 +41,17 @@ logging:
   level:
     org.hibernate.SQL: info
     org.hibernate.orm.jdbc.bind: trace
+
+management:
+  endpoints: # 1. 여러 엔드포인트를 노출할 때는 복수형(s)을 씁니다.
+    web:
+      exposure:
+        include: prometheus, health, info
+  endpoint: # 2. 특정 엔드포인트의 세부 설정을 할 때는 단수형을 씁니다.
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ClothShoppingMall # 그라파나가 찾을 이름표

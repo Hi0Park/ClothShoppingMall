@@ -1,0 +1,30 @@
+global:
+  scrape_interval: 15s       # 기본 메트릭 수집 주기
+  evaluation_interval: 15s    # 알림 규칙 평가 주기
+
+## 알림 규칙 파일
+#rule_files:
+#  - "alert-rules.yml"
+
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Spring Boot 애플리케이션
+  - job_name: 'spring-boot-app'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s          # 애플리케이션은 더 자주 수집
+    scrape_timeout: 3s           # 3초 내 응답 없으면 실패 처리
+    static_configs:
+      - targets: ['app:8080']
+        labels:
+          service: 'shopping-mall'
+          team: 'backend'
+
+  # 다중 인스턴스 환경 (Scale-out 시)
+  # - job_name: 'spring-boot-cluster'
+  #   metrics_path: '/actuator/prometheus'
+  #   static_configs:
+  #     - targets: ['app1:8080', 'app2:8080', 'app3:8080']
