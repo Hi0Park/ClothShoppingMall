@@ -6,6 +6,7 @@ import org.example.cloth_shopping_mall.global.common.ApiResponse;
 import org.example.cloth_shopping_mall.service.CustomerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,16 @@ public class CustomerController {
     @GetMapping("/lowest/same-brand")
     public ResponseEntity<ApiResponse<ProductDto.ProductsForOneBrandResponse>> getLowestProductWithOneBrand() {
         ProductDto.ProductsForOneBrandResponse response = customerService.findLowestPriceWithOneBrand();
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success(response));
+    }
+
+    @GetMapping("/lowest/category/{categoryName}")
+    public ResponseEntity<ApiResponse<ProductDto.ProductsForExtremumWithCategoryResponse>> getExtremumPriceProductsWithCategory(
+            @PathVariable String categoryName
+    ) {
+        ProductDto.ProductsForExtremumWithCategoryResponse response = customerService.findExtremumProductsWithCategory(categoryName);
 
         return ResponseEntity.ok()
                 .body(ApiResponse.success(response));

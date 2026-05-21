@@ -16,4 +16,7 @@ public interface ProductsRepository extends JpaRepository<ProductsEntity, Long>,
     List<ProductsEntity> findByCategory(Category category, Sort sort, Limit limit);
 
     ProductsEntity findFirstByBrandEntityAndCategoryAndDeletedAtIsNullOrderByPriceAsc(BrandEntity brandEntity, Category category);
+
+    ProductsEntity findFirstByCategoryOrderByPriceAsc(Category category);
+    ProductsEntity findFirstByCategoryOrderByPriceDesc(Category category);
 }

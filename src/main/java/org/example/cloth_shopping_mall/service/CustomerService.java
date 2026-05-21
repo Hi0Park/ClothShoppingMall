@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CustomerService {
     private final BrandRepository brandRepository;
@@ -83,9 +82,9 @@ public class CustomerService {
                 .map(Map.Entry::getKey)
                 .orElseThrow();
 
-        List<ProductDto.ProductsForOneBrandItemInfo> itemInfos = allLowestPrices.stream()
+        List<ProductDto.ProductsWithCategoryNameAndPrice> itemInfos = allLowestPrices.stream()
                 .filter(row -> row.getBrandName().equals(lowestBrandName))
-                .map(row -> new ProductDto.ProductsForOneBrandItemInfo(
+                .map(row -> new ProductDto.ProductsWithCategoryNameAndPrice(
                         row.getCategoryName(),
                         row.getPrice()
                 ))
@@ -94,6 +93,48 @@ public class CustomerService {
         return ProductDto.ProductsForOneBrandResponse.of(lowestBrandName, itemInfos);
     }
 
+    @Transactional(readOnly = true)
+    public ProductDto.ProductsForExtremumWithCategoryResponse findExtremumProductsWithCategory(String categoryName) {
+        List<ProductsEntity> extremumProducts = productsRepository.findExtremumProductsByCategory(Category.valueOf(categoryName.toUpperCase()));
+        /*
+        TODO : 예외 처리 분리
+            1. ENUM에 존재하지 않는 Category
+            2. 상품 미존재
+         */
+        if (extremumProducts.isEmpty()) {
+            throw new IllegalArgumentException("상품이 존재하지 않습니다");
+        }
+
+        int maxPrice = extremumProducts.stream()
+                .mapToInt(ProductsEntity::getPrice)
+                .max()
+                .orElseThrow();
+        int minPrice = extremumProducts.stream()
+                .mapToInt(ProductsEntity::getPrice)
+                .min()
+                .orElseThrow();
+
+        List<ProductDto.ProductsWithBrandNameAndPrice> minPriceProducts = extremumProducts.stream()
+                .filter(productsEntity -> productsEntity.getPrice() == minPrice)
+                .map(row -> new ProductDto.ProductsWithBrandNameAndPrice(
+                        row.getBrandEntity().getName(),
+                        row.getPrice()
+                ))
+                .toList();
+
+        List<ProductDto.ProductsWithBrandNameAndPrice> maxPriceProducts = extremumProducts.stream()
+                .filter(productsEntity -> productsEntity.getPrice() == maxPrice)
+                .map(row -> new ProductDto.ProductsWithBrandNameAndPrice(
+                        row.getBrandEntity().getName(),
+                        row.getPrice()
+                ))
+                .toList();
+
+        return ProductDto.ProductsForExtremumWithCategoryResponse.of(categoryName, minPriceProducts, maxPriceProducts);
+    }
+
+
+    @Transactional
     public void addProduct(ProductsEntity product) {
         productsRepository.save(product);
 
@@ -117,7 +158,7 @@ public class CustomerService {
         }
     }
 
-
+    @Transactional
     public void deleteProduct(Long productId) {
         ProductsEntity product = productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다.")); // TODO : 예외 처리 변경

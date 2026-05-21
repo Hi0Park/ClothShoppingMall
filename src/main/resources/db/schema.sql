@@ -15,3 +15,5 @@ ALTER TABLE `brand` ADD CONSTRAINT `PK_BRAND` PRIMARY KEY (`id`);
 
 ALTER TABLE `products` ADD CONSTRAINT `PK_PRODUCTS` PRIMARY KEY (`id`);
 
+CREATE INDEX si_price ON `products` (`price`);
+

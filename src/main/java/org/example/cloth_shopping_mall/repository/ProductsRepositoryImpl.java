@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.example.cloth_shopping_mall.entity.Category;
 import org.example.cloth_shopping_mall.entity.ProductsEntity;
 import org.example.cloth_shopping_mall.entity.QProductsEntity;
 import org.springframework.stereotype.Repository;
@@ -17,16 +18,26 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom{
     QProductsEntity productsEntity = QProductsEntity.productsEntity;
     QProductsEntity subProductsEntity = new QProductsEntity("sub");
 
+    @SuppressWarnings("unchecked")
     @Override
-    public List<ProductsEntity> findMinPriceByCategory() {
+    public List<ProductsEntity> findExtremumProductsByCategory(Category category) {
         return queryFactory.selectFrom(productsEntity)
                 .join(productsEntity.brandEntity).fetchJoin()
-                .where(Expressions.list(productsEntity.category, productsEntity.price).in(
-                        JPAExpressions
-                                .select(subProductsEntity.category, subProductsEntity.price.min())
-                                .from(subProductsEntity)
-                                .groupBy(subProductsEntity.category)
-                ))
+                .where(
+                        productsEntity.category.eq(category)
+                                .and(
+                                        productsEntity.price.in(
+                                                JPAExpressions
+                                                        .select(subProductsEntity.price.min())
+                                                        .from(subProductsEntity)
+                                                        .where(subProductsEntity.category.eq(category)),
+                                                JPAExpressions
+                                                        .select(subProductsEntity.price.max())
+                                                        .from(subProductsEntity)
+                                                        .where(subProductsEntity.category.eq(category))
+                                        )
+                                )
+                )
                 .fetch();
     }
 

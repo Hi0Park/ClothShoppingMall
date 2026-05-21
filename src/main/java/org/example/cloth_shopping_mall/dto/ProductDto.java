@@ -9,14 +9,7 @@ public class ProductDto {
             String brandName,
             String categoryName,
             Integer price
-    ) {
-        public static ProductsForCategoryItemInfo from(ProductsEntity entity) {
-            return new ProductsForCategoryItemInfo(
-                    entity.getBrandEntity().getName(),
-                    entity.getCategory().name(),
-                    entity.getPrice());
-        }
-    }
+    ) { }
     public record ProductsForCategoryResponse(
             List<ProductsForCategoryItemInfo> items,
             Integer totalCost
@@ -29,27 +22,38 @@ public class ProductDto {
         }
     }
 
-    public record ProductsForOneBrandItemInfo(
+    public record ProductsWithCategoryNameAndPrice(
             String categoryName,
             Integer price
-    ) {
-        public static ProductsForOneBrandItemInfo from(ProductsEntity entity) {
-            return new ProductsForOneBrandItemInfo(
-                    entity.getCategory().name(),
-                    entity.getPrice());
+    ) { }
+    public record ProductsForOneBrandResponse(
+            String brandName,
+            List<ProductsWithCategoryNameAndPrice> items,
+            Integer price
+    ){
+        public static ProductsForOneBrandResponse of(String brandName, List<ProductsWithCategoryNameAndPrice> items) {
+            Integer sum = items.stream()
+                    .mapToInt(ProductsWithCategoryNameAndPrice::price)
+                    .sum();
+            return new ProductsForOneBrandResponse(brandName, items, sum);
         }
     }
 
-    public record ProductsForOneBrandResponse(
-            String brandName,
-            List<ProductsForOneBrandItemInfo> items,
-            Integer price
-    ){
-        public static ProductsForOneBrandResponse of(String brandName, List<ProductsForOneBrandItemInfo> items) {
-            Integer sum = items.stream()
-                    .mapToInt(ProductsForOneBrandItemInfo::price)
-                    .sum();
-            return new ProductsForOneBrandResponse(brandName, items, sum);
+    public record ProductsWithBrandNameAndPrice(
+        String brandName,
+        Integer price
+    ) { }
+    public record ProductsForExtremumWithCategoryResponse(
+            String categoryName,
+            List<ProductsWithBrandNameAndPrice> minPriceProducts,
+            List<ProductsWithBrandNameAndPrice> maxPriceProducts
+    ) {
+        public static ProductsForExtremumWithCategoryResponse of(
+                String categoryName,
+                List<ProductsWithBrandNameAndPrice> minPriceProducts,
+                List<ProductsWithBrandNameAndPrice> maxPriceProducts
+        ) {
+            return new ProductsForExtremumWithCategoryResponse(categoryName, minPriceProducts, maxPriceProducts);
         }
     }
 
