@@ -1,6 +1,6 @@
 # ClothShoppingMall (의류 커머스 최저가 검색 엔진 백엔드 API)
 
-Spring Boot 4.0.6 환경과 Querydsl을 기반으로 구축한 고성능 의류 카테고리별 최저가/최고가 분석 및 검색 플랫폼 엔진입니다. 단순한 데이터 CRUD를 넘어, 대용량 트래픽 상황에서의 대형 조회 쿼리 병목을 개선하기 위해 전용 통계 장부 레이어를 운용하고 효율적인 인프라 모니터링 파이프라인을 구축했습니다.
+Spring Boot 4.0.6 환경과 Querydsl을 기반으로 구축한 고성능 의류 카테고리별 최저가/최고가 분석 및 검색 플랫폼 토이 프로젝트입니다. 대용량 트래픽 상황에서의 대형 조회 쿼리 병목 상황을 상정하고, 전용 통계 조회 테이블을 운용하여 효율적인 인프라 모니터링 시스템을 구축했습니다.
 
 ---
 
@@ -10,11 +10,10 @@ Spring Boot 4.0.6 환경과 Querydsl을 기반으로 구축한 고성능 의류 
 - **Language**: Java 17
 - **Framework**: Spring Boot 4.0.6
 - **Build Tool**: Gradle
-- **Database ORM**: Spring Data JPA & Querydsl JPA 5.0.0 (Jakarta 호환 코어)
+- **Database ORM**: Spring Data JPA & Querydsl JPA 5.0.0
 
 ### Infra & Monitoring & Test Tools
-- **RDB Environment**: H2 Database (MySQL Mode 데이터 정합성 호환)
-- **DevOps**: Docker, Docker-compose (Multi-Container 가상화 인프라)
+- **RDB Environment**: H2 Database (MySQL 마이그레이션 상정)
 - **Monitoring**: Spring Boot Actuator, Prometheus, Grafana Dashboard
 - **Performance Test**: k6 Open Model (Constant Arrival Rate) & Stage Load Testing
 
@@ -24,19 +23,15 @@ Spring Boot 4.0.6 환경과 Querydsl을 기반으로 구축한 고성능 의류 
 
 ### 1. 조회 성능 극대화를 위한 '통계 장부 엔티티' 분리 및 캐싱
 - **문제 인식**: 수천만 건의 실시간 상품 데이터(products)를 가진 이커머스 도메인에서 사용자가 카테고리별 최저가를 요청할 때마다 데이터베이스에 Aggregate(MIN(), GROUP BY) 집계 연산을 때리면 디스크 I/O 병목으로 인해 전체 인프라가 다운될 위험이 있습니다.
-- **해결 방안**: 무거운 조회 책임을 물리적으로 분리하기 위해 카테고리별 최저가 브랜드와 가격 정보만을 전담 마크하는 **BrandCategoryLowestPriceEntity** 테이블을 별도로 운용(CQRS 아키텍처 변형 형태)합니다.
+- **해결 방안**: 무거운 조회 책임을 물리적으로 분리하기 위해 카테고리별 최저가 브랜드와 가격 정보만을 전담 마크하는 **BrandCategoryLowestPriceEntity** 테이블을 별도로 운용(CQRS 아키텍처 형태)합니다.
 - **데이터 라이프사이클 및 정합성 제어**:
   - **Context 구동 초기화**: DataInitializer 컴포넌트를 구성하여 애플리케이션 런타임 업(Up) 시점에 시스템에 내장된 기초 데이터셋 명세(schema.sql, data.sql)와 장부 테이블 간의 동기화를 자동으로 수행합니다.
   - **실시간 데이터 동기화**: 관리자 레이어에서 신규 상품이 추가되거나(addProduct), 기존 최저가 기준을 흔드는 상품 변동 및 삭제(deleteProduct)가 감지되면, 비즈니스 로직단에서 실시간으로 스코어를 추적하여 장부 데이터를 원자적(Atomic)으로 업데이트합니다.
   - **로컬 캐시 레이어 튜닝**: 실시간 최저가 API 진입점에 @Cacheable("lowestPriceEachCategory") 엔진을 연동하여, 동일 바운더리의 반복 조회 요청에 대해 자원 소모 없이 메모리에서 즉시 0ms 응답을 리턴하도록 구현했습니다.
 
-### 2. 우선순위 체인 기반의 분산 정렬 알고리즘 탑재
-- 카테고리별 최저가 브랜드를 그룹핑하고 연산하는 과정에서 동일 가격 동점자 브랜드가 다수 존재할 때 발생할 수 있는 데이터 왜곡 및 특정 데이터 몰림 현상을 방지하기 위해 정교한 정렬 체인을 빌드했습니다.
-- **우선순위 수식 알고리즘**: Absolute Lowest Price (가격 최저값 최우선) -> Picked Brands Exclusion (이미 특정 카테고리에서 선정된 브랜드 가중치 제외 처리로 골고루 분산 노출) -> Alphabetical Brand Name (최종 동점 시 브랜드명 사전식 순 정렬) 메커니즘을 자바 람다 스트림의 커스텀 비교기(Comparator) 인터페이스를 활용하여 깔끔한 모던 코드로 구현했습니다.
-
-### 3. Querydsl 컴파일 타임 최적화 및 복잡한 Extremum 서브쿼리 박멸
+### 2. Querydsl 컴파일 타임 최적화 및 복잡한 Extremum 서브쿼리 지양
 - 단일 카테고리 내에서 최저가 상품 정보와 최고가 상품 정보를 동시에 뽑아 한 번에 리턴해야 하는 고도화된 스펙을 만족하기 위해 ProductsRepositoryImpl에 Querydsl Custom 레포지토리 아키텍처를 도입했습니다.
-- 서브쿼리용 엔티티 인스턴스(subProductsEntity)를 내부 격리 구조로 동적 빌드하고, 연관 도메인 간의 깊은 참조 레이어에 fetchJoin()을 명시적으로 매핑하여 **JPA 최대의 고질병인 N+1 쿼리 오버헤드를 완벽히 차단**하고 단 한 번의 인덱스 스캔 쿼리로 타깃 셋을 바인딩합니다.
+- 서브쿼리용 엔티티 인스턴스(subProductsEntity)를 내부 격리 구조로 동적 빌드하고, 연관 도메인 간의 깊은 참조 레이어에 fetchJoin()을 명시적으로 매핑하여 JPA N+1 쿼리 오버헤드 문제를 해결하고 단 한 번의 인덱스 스캔 쿼리로 타깃 셋을 바인딩합니다.
 
 ---
 ```text
