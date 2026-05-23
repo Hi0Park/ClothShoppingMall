@@ -39,7 +39,7 @@ Spring Boot 4.0.6 환경과 Querydsl을 기반으로 구축한 고성능 의류 
 - 서브쿼리용 엔티티 인스턴스(subProductsEntity)를 내부 격리 구조로 동적 빌드하고, 연관 도메인 간의 깊은 참조 레이어에 fetchJoin()을 명시적으로 매핑하여 **JPA 최대의 고질병인 N+1 쿼리 오버헤드를 완벽히 차단**하고 단 한 번의 인덱스 스캔 쿼리로 타깃 셋을 바인딩합니다.
 
 ---
-
+```text
 Package Structure (디렉토리 및 소스 구조)
 
 src/main/java/org/example/cloth_shopping_mall
@@ -54,6 +54,7 @@ src/main/java/org/example/cloth_shopping_mall
 
 
 1. 고객 전용 API 명세 (/api/customer/*)
+
 GET /api/customer/lowest/each
 
 서비스 내 모든 카테고리의 최저가 브랜드 상품 목록과 해당 상품들의 총액 합산 레이아웃 반환 (메모리 로컬 캐싱 적용)
@@ -67,6 +68,7 @@ GET /api/customer/lowest/category/{categoryName}
 특정 카테고리명을 파라미터로 주입받아, 해당 카테고리 내부의 최저가 상품 목록과 최고가 상품 목록을 Querydsl 서브쿼리 조합으로 동시 집계하여 반환
 
 2. 운영 관리자 API 명세 (/api/admin/*)
+
 POST /api/admin/brand : 신규 브랜드 등록(미구현)
 
 PUT /api/admin/brand/{id} : 기존 등록 브랜드 정보 수정(미구현)
@@ -78,3 +80,5 @@ POST /api/admin/product : 특정 브랜드 하위에 속하는 신규 의류 상
 PUT /api/admin/product/{id} : 등록된 상품의 가격 정보 변경 및 옵션 수정
 
 DELETE /api/admin/product/{id} : 상품 완전 삭제 처리
+
+```
