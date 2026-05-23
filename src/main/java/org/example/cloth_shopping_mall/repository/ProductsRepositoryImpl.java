@@ -30,11 +30,13 @@ public class ProductsRepositoryImpl implements ProductsRepositoryCustom{
                                                 JPAExpressions
                                                         .select(subProductsEntity.price.min())
                                                         .from(subProductsEntity)
-                                                        .where(subProductsEntity.category.eq(category)),
+                                                        .where(subProductsEntity.category.eq(category)
+                                                                .and(subProductsEntity.deletedAt.isNull())),
                                                 JPAExpressions
                                                         .select(subProductsEntity.price.max())
                                                         .from(subProductsEntity)
-                                                        .where(subProductsEntity.category.eq(category))
+                                                        .where(subProductsEntity.category.eq(category)
+                                                                .and(subProductsEntity.deletedAt.isNull()))
                                         )
                                 )
                 )
