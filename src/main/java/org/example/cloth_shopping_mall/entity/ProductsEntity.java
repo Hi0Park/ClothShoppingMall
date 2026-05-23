@@ -1,15 +1,16 @@
 package org.example.cloth_shopping_mall.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Builder
 @Getter
-@Setter
 @Table(name = "products")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +29,14 @@ public class ProductsEntity {
 
     @Column
     private LocalDateTime deletedAt;
+
+    public void updateDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public void updateProduct(
+            Integer price
+    ) {
+        this.price = price != null ? price : this.price;
+    }
 }

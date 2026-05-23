@@ -6,6 +6,7 @@ import org.example.cloth_shopping_mall.entity.BrandCategoryLowestPriceEntity;
 import org.example.cloth_shopping_mall.entity.ProductsEntity;
 import org.example.cloth_shopping_mall.repository.BrandCategoryALowestPriceRepository;
 import org.example.cloth_shopping_mall.repository.ProductsRepository;
+import org.example.cloth_shopping_mall.service.AdminService;
 import org.example.cloth_shopping_mall.service.CustomerService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,11 @@ import java.util.List;
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
     private final ProductsRepository productsRepository;
-    private final CustomerService customerService;
+    private final AdminService adminService;
 
     @Override
     @Transactional
+    // H2 DB서 데이터 INIT을 위한 임시 코드
     public void run(String... args) throws Exception {
         log.info("H2 초기 데이터 동기화 시작");
 
@@ -33,7 +35,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         for (ProductsEntity product : initProducts) {
-            customerService.syncLowestPrice(product);
+            adminService.syncLowestPrice(product);
         }
 
         log.info("초기 데이터 동기화 완료");

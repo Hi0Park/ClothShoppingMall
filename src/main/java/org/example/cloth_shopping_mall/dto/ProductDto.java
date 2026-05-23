@@ -1,5 +1,7 @@
 package org.example.cloth_shopping_mall.dto;
 
+import org.example.cloth_shopping_mall.entity.BrandEntity;
+import org.example.cloth_shopping_mall.entity.Category;
 import org.example.cloth_shopping_mall.entity.ProductsEntity;
 
 import java.util.List;
@@ -58,6 +60,28 @@ public class ProductDto {
     }
 
     // 추가 예정
-    public record ProductsRequest(
-    ) { }
+    public record AddProductRequest(
+            String categoryName,
+            String brandName,
+            Integer price
+    ) {
+        public ProductsEntity toEntity(BrandEntity brandEntity) {
+            return ProductsEntity.builder()
+                    .category(Category.valueOf(this.categoryName.toUpperCase()))
+                    .price(this.price)
+                    .brandEntity(brandEntity)
+                    .build();
+        }
+    }
+
+    public record DeleteProductRequest(
+            Long id
+    ) {}
+
+    public record UpdateProductRequest(
+            Long id,
+            Integer price
+    ) {
+
+    }
 }

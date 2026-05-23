@@ -6,7 +6,6 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "brand")
 public class BrandEntity {
     @Id

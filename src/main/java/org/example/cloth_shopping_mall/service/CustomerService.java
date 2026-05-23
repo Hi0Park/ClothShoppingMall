@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-    private final BrandRepository brandRepository;
     private final ProductsRepository productsRepository;
     private final BrandCategoryALowestPriceRepository lowestPriceRepository;
 
@@ -94,6 +93,7 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "extremumProducts")
     public ProductDto.ProductsForExtremumWithCategoryResponse findExtremumProductsWithCategory(String categoryName) {
         List<ProductsEntity> extremumProducts = productsRepository.findExtremumProductsByCategory(Category.valueOf(categoryName.toUpperCase()));
         /*
@@ -131,54 +131,5 @@ public class CustomerService {
                 .toList();
 
         return ProductDto.ProductsForExtremumWithCategoryResponse.of(categoryName, minPriceProducts, maxPriceProducts);
-    }
-
-
-    @Transactional
-    public void addProduct(ProductsEntity product) {
-        productsRepository.save(product);
-
-        syncLowestPrice(product);
-    }
-
-    public void syncLowestPrice(ProductsEntity product) {
-        String brandName = product.getBrandEntity().getName();
-        String categoryName = product.getCategory().name();
-
-        BrandCategoryLowestPriceEntity currentLowestProduct = lowestPriceRepository.findByBrandNameAndCategoryName(brandName, categoryName);
-        if (currentLowestProduct == null) {
-            lowestPriceRepository.save(new BrandCategoryLowestPriceEntity(
-                    brandName,
-                    categoryName,
-                    product.getPrice(),
-                    product.getId()
-            ));
-        } else if (product.getPrice() < currentLowestProduct.getPrice()) {
-            currentLowestProduct.updateLowestPrice(product.getId(), product.getPrice());
-        }
-    }
-
-    @Transactional
-    public void deleteProduct(Long productId) {
-        ProductsEntity product = productsRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다.")); // TODO : 예외 처리 변경
-
-        product.setDeletedAt(LocalDateTime.now());
-
-        String brandName = product.getBrandEntity().getName();
-        String categoryName = product.getCategory().name();
-        BrandCategoryLowestPriceEntity lowestPriceProduct = lowestPriceRepository.findByBrandNameAndCategoryName(brandName, categoryName);
-
-        if (lowestPriceProduct != null && lowestPriceProduct.getProductId().equals(productId)) {
-            ProductsEntity nextLowestPriceProduct = productsRepository
-                    .findFirstByBrandEntityAndCategoryAndDeletedAtIsNullOrderByPriceAsc(product.getBrandEntity(), product.getCategory());
-
-            if (nextLowestPriceProduct != null) {
-                lowestPriceProduct.updateLowestPrice(nextLowestPriceProduct.getId(), nextLowestPriceProduct.getPrice());
-            } else {
-                lowestPriceRepository.delete(lowestPriceProduct);
-            }
-        }
-
     }
 }
