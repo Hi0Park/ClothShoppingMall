@@ -1,7 +1,8 @@
-package org.example.cloth_shopping_mall.entity;
+package org.example.cloth_shopping_mall.domain.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.cloth_shopping_mall.domain.brand.entity.BrandEntity;
 
 import java.time.LocalDateTime;
 

@@ -1,12 +1,12 @@
 package org.example.cloth_shopping_mall.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.cloth_shopping_mall.dto.ProductDto;
-import org.example.cloth_shopping_mall.entity.BrandCategoryLowestPriceEntity;
-import org.example.cloth_shopping_mall.entity.ProductsEntity;
-import org.example.cloth_shopping_mall.repository.BrandCategoryALowestPriceRepository;
-import org.example.cloth_shopping_mall.repository.BrandRepository;
-import org.example.cloth_shopping_mall.repository.ProductsRepository;
+import org.example.cloth_shopping_mall.domain.product.dto.ProductDto;
+import org.example.cloth_shopping_mall.domain.brand.entity.BrandCategoryLowestPriceEntity;
+import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
+import org.example.cloth_shopping_mall.domain.brand.repository.BrandCategoryALowestPriceRepository;
+import org.example.cloth_shopping_mall.domain.brand.repository.BrandRepository;
+import org.example.cloth_shopping_mall.domain.product.repository.ProductsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

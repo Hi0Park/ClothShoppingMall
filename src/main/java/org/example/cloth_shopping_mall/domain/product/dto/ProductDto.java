@@ -1,8 +1,8 @@
-package org.example.cloth_shopping_mall.dto;
+package org.example.cloth_shopping_mall.domain.product.dto;
 
-import org.example.cloth_shopping_mall.entity.BrandEntity;
-import org.example.cloth_shopping_mall.entity.Category;
-import org.example.cloth_shopping_mall.entity.ProductsEntity;
+import org.example.cloth_shopping_mall.domain.brand.entity.BrandEntity;
+import org.example.cloth_shopping_mall.domain.product.entity.Category;
+import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
 
 import java.util.List;
 

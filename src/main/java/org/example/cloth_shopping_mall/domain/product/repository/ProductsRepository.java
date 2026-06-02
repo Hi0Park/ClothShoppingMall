@@ -1,14 +1,13 @@
-package org.example.cloth_shopping_mall.repository;
+package org.example.cloth_shopping_mall.domain.product.repository;
 
-import org.example.cloth_shopping_mall.entity.BrandEntity;
-import org.example.cloth_shopping_mall.entity.Category;
-import org.example.cloth_shopping_mall.entity.ProductsEntity;
+import org.example.cloth_shopping_mall.domain.brand.entity.BrandEntity;
+import org.example.cloth_shopping_mall.domain.product.entity.Category;
+import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository

@@ -1,6 +1,6 @@
-package org.example.cloth_shopping_mall.repository;
+package org.example.cloth_shopping_mall.domain.brand.repository;
 
-import org.example.cloth_shopping_mall.entity.BrandEntity;
+import org.example.cloth_shopping_mall.domain.brand.entity.BrandEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BrandRepository extends JpaRepository<BrandEntity, Long> {

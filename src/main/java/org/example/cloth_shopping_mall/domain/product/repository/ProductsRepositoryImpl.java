@@ -1,12 +1,11 @@
-package org.example.cloth_shopping_mall.repository;
+package org.example.cloth_shopping_mall.domain.product.repository;
 
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.example.cloth_shopping_mall.entity.Category;
-import org.example.cloth_shopping_mall.entity.ProductsEntity;
-import org.example.cloth_shopping_mall.entity.QProductsEntity;
+import org.example.cloth_shopping_mall.domain.product.entity.Category;
+import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
+import org.example.cloth_shopping_mall.domain.product.entity.QProductsEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.example.cloth_shopping_mall.entity;
+package org.example.cloth_shopping_mall.domain.product.entity;
 
 import lombok.Getter;
 

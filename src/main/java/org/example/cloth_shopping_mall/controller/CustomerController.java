@@ -1,7 +1,7 @@
 package org.example.cloth_shopping_mall.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.cloth_shopping_mall.dto.ProductDto;
+import org.example.cloth_shopping_mall.domain.product.dto.ProductDto;
 import org.example.cloth_shopping_mall.global.common.ApiResponse;
 import org.example.cloth_shopping_mall.service.CustomerService;
 import org.springframework.http.ResponseEntity;

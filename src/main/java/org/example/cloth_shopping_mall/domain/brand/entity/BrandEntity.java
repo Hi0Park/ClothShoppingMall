@@ -1,8 +1,7 @@
-package org.example.cloth_shopping_mall.entity;
+package org.example.cloth_shopping_mall.domain.brand.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter

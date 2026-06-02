@@ -2,12 +2,9 @@ package org.example.cloth_shopping_mall.component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.cloth_shopping_mall.entity.BrandCategoryLowestPriceEntity;
-import org.example.cloth_shopping_mall.entity.ProductsEntity;
-import org.example.cloth_shopping_mall.repository.BrandCategoryALowestPriceRepository;
-import org.example.cloth_shopping_mall.repository.ProductsRepository;
+import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
+import org.example.cloth_shopping_mall.domain.product.repository.ProductsRepository;
 import org.example.cloth_shopping_mall.service.AdminService;
-import org.example.cloth_shopping_mall.service.CustomerService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    // 위로 예외 처리 핸들러 추가
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handlerGeneral(Exception e) {
         log.error("예상치 못한 예외 발생", e); // 스택 트레이스 로깅
