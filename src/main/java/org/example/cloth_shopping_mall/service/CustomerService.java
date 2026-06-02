@@ -6,6 +6,7 @@ import org.example.cloth_shopping_mall.domain.brand.entity.BrandCategoryLowestPr
 import org.example.cloth_shopping_mall.domain.product.entity.Category;
 import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
 import org.example.cloth_shopping_mall.domain.brand.repository.BrandCategoryALowestPriceRepository;
+import org.example.cloth_shopping_mall.domain.product.exception.NoProductExistException;
 import org.example.cloth_shopping_mall.domain.product.repository.ProductsRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,7 @@ public class CustomerService {
         List<BrandCategoryLowestPriceEntity> allLowestPrices = lowestPriceRepository.findAll();
 
         if (allLowestPrices.isEmpty()) {
-            throw new IllegalArgumentException("현재 등록된 상품 데이터가 없습니다."); // TODO : 예외 처리 변경
+            throw new NoProductExistException();
         }
 
         String lowestBrandName = allLowestPrices.stream()
@@ -94,13 +95,9 @@ public class CustomerService {
     @Cacheable(value = "extremumProducts")
     public ProductDto.ProductsForExtremumWithCategoryResponse findExtremumProductsWithCategory(String categoryName) {
         List<ProductsEntity> extremumProducts = productsRepository.findExtremumProductsByCategory(Category.valueOf(categoryName.toUpperCase()));
-        /*
-        TODO : 예외 처리 분리
-            1. ENUM에 존재하지 않는 Category
-            2. 상품 미존재
-         */
+
         if (extremumProducts.isEmpty()) {
-            throw new IllegalArgumentException("상품이 존재하지 않습니다");
+            throw new NoProductExistException();
         }
 
         int maxPrice = extremumProducts.stream()

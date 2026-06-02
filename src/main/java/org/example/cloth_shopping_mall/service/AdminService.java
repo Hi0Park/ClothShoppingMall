@@ -6,6 +6,7 @@ import org.example.cloth_shopping_mall.domain.brand.entity.BrandCategoryLowestPr
 import org.example.cloth_shopping_mall.domain.product.entity.ProductsEntity;
 import org.example.cloth_shopping_mall.domain.brand.repository.BrandCategoryALowestPriceRepository;
 import org.example.cloth_shopping_mall.domain.brand.repository.BrandRepository;
+import org.example.cloth_shopping_mall.domain.product.exception.ProductNotFoundException;
 import org.example.cloth_shopping_mall.domain.product.repository.ProductsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,7 +58,7 @@ public class AdminService {
     @Transactional
     public void deleteProduct(Long productId) {
         ProductsEntity product = productsRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다.")); // TODO : 예외 처리 변경
+                .orElseThrow(ProductNotFoundException::new);
 
         product.updateDeletedAt(LocalDateTime.now());
 
@@ -80,7 +81,7 @@ public class AdminService {
     @Transactional
     public Long updateProduct(ProductDto.UpdateProductRequest request) {
         ProductsEntity product = productsRepository.findById(request.id())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품 ID입니다")); // TODO : 예외 처리 변경
+                .orElseThrow(ProductNotFoundException::new);
 
         product.updateProduct(request.price());
         syncLowestPrice(product);
